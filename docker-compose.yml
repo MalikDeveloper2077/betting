@@ -1,0 +1,27 @@
+version: '3'
+
+services:
+  db:
+    image: postgres:14
+    environment:
+        POSTGRES_DB: db
+        POSTGRES_USER: user
+        POSTGRES_PASSWORD: password
+  fastapi_1:
+    build: ./betmaker
+    volumes:
+      - .:/betmaker
+    ports:
+      - "8000:8000"
+    depends_on:
+      - db
+    environment:
+        LINE_PROVIDER_DOMAIN: http://fastapi_2:8080
+  fastapi_2:
+    build: ./line-provider
+    volumes:
+      - .:/line-provider
+    ports:
+      - "8080:8080"
+    environment:
+      LINE_PROVIDER_DOMAIN: http://fastapi_1:8000
